@@ -1,2 +1,6 @@
 Nome /,Email /,Cpf /,Salário /,Setor /,Senha /,Cargo /
+<<<<<<< HEAD
 "João Silva","joao@email.com","12345678900","2500","TI","senha123","Analista"
+=======
+"João Silva", "joao@email.com", "12345678900", "2500", "TI", "senha123", "Analista"
+>>>>>>> 594241fbb068bc2ecbf3e62dc0f94021daab5946
