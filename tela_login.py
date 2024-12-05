@@ -8,6 +8,13 @@ import os
 
 windll.shcore.SetProcessDpiAwareness(2)
 
+def centralizar_janela(janela):
+    janela.update_idletasks()
+    largura = janela.winfo_width()
+    altura = janela.winfo_height()
+    x = (janela.winfo_screenwidth() // 2) - (largura // 2)
+    y = (janela.winfo_screenheight() // 2) - (altura // 2)
+    janela.geometry(f'{largura}x{altura}+{x}+{y}')
 
 
 #------------------------------------------------------
@@ -1242,6 +1249,8 @@ cadastro_button.bind("<Leave>", cd_leave)
 meusdados_button.bind("<Enter>", md_enter)
 meusdados_button.bind("<Leave>", md_leave)
 
+
+centralizar_janela(home)
 
 home.iconbitmap('C:/cadastro_teste/images/vslogo.png')
 
