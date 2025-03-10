@@ -4,6 +4,9 @@ from ctypes import windll
 from PIL import Image
 import csv
 import os
+from data_base import Funcionario, engine
+from sqlalchemy.orm import sessionmaker
+
 
 
 windll.shcore.SetProcessDpiAwareness(2)
@@ -15,6 +18,15 @@ def centralizar_janela(janela):
     x = (janela.winfo_screenwidth() // 2) - (largura // 2)
     y = (janela.winfo_screenheight() // 2) - (altura // 2)
     janela.geometry(f'{largura}x{altura}+{x}+{y}')
+
+# criando sessao para conectar ao banco
+try:
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        session = SessionLocal()
+        print("Sessão criada com sucesso!")
+except Exception as e:
+        print(f"Erro ao criar sessão: {e}")
+        exit()
 
 
 #------------------------------------------------------
@@ -43,35 +55,7 @@ home.title('')
 
 
 
-def deletar_linha():
-                arquivo_csv = 'C:/cadastro_teste/clientes.csv'
-                selecionado = table.selection()
 
-                # Obtém os dados da linha selecionada para remoção do CSV
-                linhas_para_manter = []
-
-                # Abrir o CSV e ler as linhas
-                with open(arquivo_csv, 'r', newline='', encoding='utf-8') as f:
-                        leitor_csv = csv.reader(f)
-                        linhas = list(leitor_csv)  # Converter o leitor CSV para uma lista
-
-                # Adiciona o cabeçalho (primeira linha) apenas uma vez
-                if linhas:
-                        linhas_para_manter.append(linhas[0])  # Cabeçalho original (sem strip)
-
-                # Verifica as linhas da tabela e mantém apenas as que não estão selecionadas
-                for index, item in enumerate(table.get_children()):
-                        valores_linha = table.item(item)['values']
-                        # Mantém a linha apenas se ela NÃO estiver selecionada
-                        if item not in selecionado:
-                                linhas_para_manter.append(linhas[index + 1])  # +1 para ignorar o cabeçalho
-
-                # Escreve os dados de volta ao arquivo CSV, sobrescrevendo o original
-                with open(arquivo_csv, 'w', newline='', encoding='utf-8') as f:
-                        escritor_csv = csv.writer(f)
-                        escritor_csv.writerows(linhas_para_manter)  # Escreve as linhas no formato CSV
-
-                Abrir_tela_funcionario()
 
 
 #-------------------------------------------------------
@@ -101,38 +85,50 @@ def Abrir_tela_funcionario():
 
         global table
 
+        def deletar_linha():
+                #Deleta uma linha selecionada no Treeview e no banco SQLite
+                selecionado = table.selection()
+
+                if not selecionado:
+                        print("Nenhuma linha selecionada!")
+                        return
+
+                for item in selecionado:
+                        valores = table.item(item)['values']
+                        id = valores[0]  
+
+                        # busca cpf no banco
+                        funcionario = session.query(Funcionario).filter_by(id=id).first()
+
+                if funcionario:
+                        session.delete(funcionario)
+                        session.commit()  # Confirma a exclusão no banco
+                        table.delete(item)  # Remove a linha do Treeview
+
+                else:
+                        print(f"Funcionário com ID {id} não encontrado no banco!")
+
+
         def carregar_dados():
-                arquivo_csv = 'C:/cadastro_teste/clientes.csv'
+                funcionarios = session.query(Funcionario).all()
                 
-                # Verificar se o arquivo existe
-                if not os.path.isfile(arquivo_csv):
-                        print(f"O arquivo {arquivo_csv} não foi encontrado.")
-                        return []
-
-                # Inicializar a lista de dados
-                dados = []
-                
-                # Abrir o arquivo e ler os dados
-                with open(arquivo_csv, mode="r", newline="", encoding="utf-8") as file:
-                        leitor_csv = csv.reader(file)
-                        next(leitor_csv)  # Pular o cabeçalho, caso necessário
-                        for linha in leitor_csv:
-                                dados.append((linha[0],linha[6],linha[4],linha[3],linha[2],linha[1]))  # Converter cada linha em uma tupla e adicionar à lista
-
-                        return dados
+                return [(f.id, f.nome, f.cargo, f.setor, f.salario, f.cpf, f.email) for f in funcionarios]
 
 
         def buscar_dados(event=None):
-                search_query = barra_pesquisa.get().lower()  # Obtém o texto do campo de pesquisa e transforma em minúsculas
+                search_query = barra_pesquisa.get().strip().lower()  # Obtém o texto da barra de pesquisa e normaliza
 
-                # Limpa a tabela antes de adicionar os resultados filtrados
+                # Limpa a tabela antes de adicionar os novos resultados
                 for row in table.get_children():
                         table.delete(row)
 
-                # Insere apenas as linhas que correspondem à pesquisa
-                for item in dados:
-                        if search_query in item[0].lower():  # Filtra pelo nome (índice 1), mas pode ajustar para outras colunas
-                                table.insert("", "end", values=item)
+                # Busca no banco de dados funcionários cujo nome contenha a string pesquisada
+                funcionarios = session.query(Funcionario).filter(Funcionario.nome.ilike(f"%{search_query}%")).all()
+
+                # Insere os dados filtrados na tabela
+                for funcionario in funcionarios:
+                        table.insert("", "end", values=(funcionario.id, funcionario.nome, funcionario.cargo, funcionario.setor, 
+                                                        funcionario.salario, funcionario.cpf, funcionario.email))
 
 
         
@@ -281,9 +277,9 @@ def Abrir_tela_funcionario():
         
   
         
-        table = ttk.Treeview(interior_func, columns = ('nome', 'cargo', 'setor','salario','cpf','email'), show='headings', style="Custom.Treeview")
+        table = ttk.Treeview(interior_func, columns = ('id','nome', 'cargo', 'setor','salario','cpf','email'), show='headings', style="Custom.Treeview")
         
-   
+        table.heading('id', text='ID',anchor='w')
         table.heading('nome', text='Nome',anchor='w')
         table.heading('cargo', text='Cargo',anchor='w')
         table.heading('setor', text='Setor',anchor='w')
@@ -291,7 +287,7 @@ def Abrir_tela_funcionario():
         table.heading('cpf', text='Cpf',anchor='w')
         table.heading('email', text='Email',anchor='w')
 
-
+        table.column('id', width=45)
         table.column('nome', width=110)
         table.column('cargo', width=110)
         table.column('setor', width=60)
@@ -404,15 +400,24 @@ def Abrir_tela_cadastro():
                 setor = setor_entry.get()
                 senha = senha_entry.get()
                 cargo = cargo_entry.get()
+        
+        
 
-                arquivo_csv = 'clientes.csv'
-                file_exists = os.path.isfile(arquivo_csv)
+                novo_funcionario = Funcionario(
+                        nome=nome,
+                        cargo=cargo,
+                        setor=setor,
+                        salario=float(salario),  # Converter para float se necessário
+                        cpf=cpf,
+                        email=email,
+                        senha = senha
+                        )
 
-                with open(arquivo_csv, mode="a", newline="", encoding="utf-8") as file:
-                        escritor_csv = csv.writer(file)
-                        if not file_exists:
-                                escritor_csv.writerow(['Nome /', 'Email /', 'Cpf /', 'Salário /', 'Setor /', 'Senha /', 'Cargo /'])
-                        escritor_csv.writerow([nome, email, cpf, salario, setor, senha, cargo])
+
+                session.add(novo_funcionario)  # Adiciona o novo funcionário
+                session.commit()  # Salva as mudanças no banco
+
+
                 
                 nome_entry.delete(0, ctk.END)
                 email_entry.delete(0, ctk.END)
