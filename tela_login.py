@@ -29,16 +29,6 @@ except Exception as e:
         exit()
 
 
-#------------------------------------------------------
-#------------------- Login ---------------------------
-
-
-#----------------------------------------------------
-#---------------------------------------------------
-
-
-
-
 home = ctk.CTk()
 ctk.set_appearance_mode('light')
 
@@ -51,8 +41,6 @@ home_label.pack(anchor='center')
 home.geometry('1200x750')
 home.resizable(False,False)
 home.title('')
-
-
 
 
 
