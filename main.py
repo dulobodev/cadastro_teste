@@ -2,8 +2,6 @@ import customtkinter as ctk
 from tkinter import ttk
 from ctypes import windll
 from PIL import Image
-import csv
-import os
 from data_base import Funcionario, engine
 from sqlalchemy.orm import sessionmaker
 
@@ -54,12 +52,6 @@ def fc_enter(event):
  
 def fc_leave(event):
     funcionario_button.configure(image=funcionario_image)
-
-def md_enter(event):
-        meusdados_button.configure(image=md_hover)
-
-def md_leave(event):
-        meusdados_button.configure(image=meusdados_image)
 
 def cd_enter(event):
         cadastro_button.configure(image=cadastro_hover)
@@ -118,22 +110,6 @@ def Abrir_tela_funcionario():
                         table.insert("", "end", values=(funcionario.id, funcionario.nome, funcionario.cargo, funcionario.setor, 
                                                         funcionario.salario, funcionario.cpf, funcionario.email))
 
-
-        
-
-        meusdados_button = ctk.CTkButton(
-                                 master=home,
-                                 text=None,
-                                 image=meusdados_image,
-                                 bg_color='#E9E5E5',
-                                 fg_color='white',
-                                 hover_color='#E9E5E5',
-                                 border_color='#E9E5E5',
-                                 width=0,
-                                 height=0,
-                                 command=Abrir_tela_md
-                                                      )
-        meusdados_button.place(x=-8,y=320)
         
         cadastro_button = ctk.CTkButton(
                                 master=home,
@@ -293,12 +269,6 @@ def Abrir_tela_funcionario():
   
         table.place(x=0, y=36, width=840, height=600)
 
-        
-        def md_enter(event):
-                meusdados_button.configure(image=md_hover)
-
-        def md_leave(event):
-                meusdados_button.configure(image=meusdados_image)
 
         def cd_enter(event):
                 cadastro_button.configure(image=cadastro_hover)
@@ -310,30 +280,11 @@ def Abrir_tela_funcionario():
         cadastro_button.bind("<Enter>", cd_enter)
         cadastro_button.bind("<Leave>", cd_leave)
 
-        meusdados_button.bind("<Enter>", md_enter)
-        meusdados_button.bind("<Leave>", md_leave)
-
 #-----------------------------------------
 #------------ Cadastro ------------------
 
 def Abrir_tela_cadastro():
     
-        
-
-
-        meusdados_button = ctk.CTkButton(
-                                master=home,
-                                text=None,
-                                image=meusdados_image,
-                                bg_color='#E9E5E5',
-                                fg_color='white',
-                                hover_color='#E9E5E5',
-                                border_color='#E9E5E5',
-                                width=0,
-                                height=0,
-                                command=Abrir_tela_md
-                                                )
-        meusdados_button.place(x=-8,y=320)
 
         funcionario_button = ctk.CTkButton(
                                    master=home,
@@ -720,15 +671,6 @@ def Abrir_tela_cadastro():
 
 
 
-
-        
-        def md_enter(event):
-                meusdados_button.configure(image=md_hover)
-
-        def md_leave(event):
-                meusdados_button.configure(image=meusdados_image)
-
-
         def fc_enter(event):
                 funcionario_button.configure(image=funcionario_hover_image)
         
@@ -737,407 +679,6 @@ def Abrir_tela_cadastro():
         
         funcionario_button.bind("<Enter>", fc_enter)
         funcionario_button.bind("<Leave>", fc_leave)
-
-        meusdados_button.bind("<Enter>", md_enter)
-        meusdados_button.bind("<Leave>", md_leave)
-
-#----------------------------------------
-#------------- Meus Dados ----------------
-
-def Abrir_tela_md():
-        
-
-
-        def buscar_email(email_buscado):
-                with open('C:/cadastro_teste/clientes.csv', 'r') as csvfile:
-                        linhas_encontradas = []  # Lista para armazenar as linhas encontradas
-                        reader = csv.reader(csvfile)
-                        next(reader)  # Pular o cabeçalho
-                        for linha in reader:
-                                print(linha)  # Adiciona impressão para depuração
-                                if linha[1].strip() == email_buscado:  # Remove espaços em branco
-                                        linhas_encontradas.append(linha)  # Adiciona a linha à lista
-                return linhas_encontradas  # Retorna a lista de linhas
-
-        # Chamada da função e armazenamento da saída em uma lista
-        resultado = buscar_email('ff')
-
-        for linha in resultado:
-                if linha:  # Verifica se a linha não está vazia
-                        nome = linha[0]  
-                        email = linha[1]  
-                        cpf = linha[2]
-                        salario = linha[3]
-                        setor = linha[4]
-                        senha = linha[5]
-                        cargo = linha[6]
-
-
-        funcionario_button = ctk.CTkButton(
-                                   master=home,
-                                   text=None,
-                                   image=funcionario_image,
-                                   bg_color='#E9E5E5',
-                                   fg_color='white',
-                                   hover_color='#E9E5E5',
-                                   border_color='#E9E5E5',
-                                   width=0,
-                                   height=0,
-                                   command=Abrir_tela_funcionario,
-                                                                 )
-        funcionario_button.place(x=-8,y=190)
-        
-        
-        cadastro_button = ctk.CTkButton(
-                                master=home,
-                                text=None,
-                                image=cadastro_image,
-                                bg_color='#E9E5E5',
-                                fg_color='white',
-                                hover_color='#E9E5E5',
-                                border_color='#E9E5E5',
-                                width=0,
-                                height=0,
-                                command=Abrir_tela_cadastro
-                                                           )
-        cadastro_button.place(x=-8,y=255)
-        
-        
-
-        meusdados_button.place_forget()
-
-        md_hovb = ctk.CTkButton(
-                                 master=home,
-                                 text=None,
-                                 image=md_hover,
-                                 bg_color='#E9E5E5',
-                                 fg_color='#E9E5E5',
-                                 hover_color='#E9E5E5',
-                                 border_color='#E9E5E5',
-                                 width=0,
-                                 height=0,
-                                         )
-        md_hovb.place(x=-8,y=320)
-        
-        
-        interior_md = ctk.CTkFrame(master=home,bg_color='#DEDEDE',fg_color='white',width=840,height=636)
-        interior_md.place(x=298,y=62)
-
-        text_dados = ctk.CTkLabel( 
-                                interior_md,
-                                text='Seus Dados',
-                                text_color='#EF5151',
-                                font=('Istok Web', 32, 'bold'),
-                                fg_color='white',
-                                bg_color='white',
-                                width=155,
-                                height=46
-                                          )
-        text_dados.place(x=35,y=35)
-
-
-        nome_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Nome',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=37,
-                                height=20
-                                          )
-        nome_text.place(x=35,y=121)                               
-        
-
-        email_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Email',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=34,
-                                height=20
-                                          )
-        email_text.place(x=429,y=121)
-
-
-        cpf_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Cpf',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=22,
-                                height=20
-                                          )
-        cpf_text.place(x=35,y=219)
-
-
-        salario_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Salario',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=43,
-                                height=20
-                                          )
-        salario_text.place(x=429,y=219)
-
-
-        setor_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Setor',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=34,
-                                height=20
-                                          )
-        setor_text.place(x=35,y=317)
-
-
-        senha_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Senha',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=39,
-                                height=20
-                                          )
-        senha_text.place(x=429,y=317)
-
-
-
-        cargo_text = ctk.CTkLabel(
-                                interior_md,
-                                text='Cargo',
-                                text_color='#787878',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=38,
-                                height=20
-                                          )
-        cargo_text.place(x=35,y=415)
-
-
-        aumento_button = ctk.CTkButton(
-                                interior_md,
-                                text='Pedir Aumento',
-                                text_color='white',
-                                font=('Istok Web', 15, 'bold'),
-                                fg_color='#EF5151',
-                                bg_color='white',
-                                border_width=None,
-                                hover=None,
-                                corner_radius=5,
-                                width=376,
-                                height=26,
-
-                                                           )
-        aumento_button.place(x=429,y=437)
-        
-
-        
-        
-        nome_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{nome}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        nome_entry.place(x=35,y=146)                               
-        
-
-        email_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{email}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        email_entry.place(x=429,y=146)
-
-
-        cpf_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{cpf}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        cpf_entry.place(x=35,y=244)
-
-
-        salario_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{salario}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        salario_entry.place(x=429,y=244)
-
-
-        setor_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{setor}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        setor_entry.place(x=35,y=342)
-
-
-        senha_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{senha}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        senha_entry.place(x=429,y=342)
-
-
-
-        cargo_entry = ctk.CTkLabel(
-                                interior_md,
-                                text=f'{cargo}',
-                                font=('Istok Web', 15),
-                                fg_color='white',
-                                bg_color='white',
-                                width=376,
-                                height=3,
-                                anchor='w'
-                                          )
-        cargo_entry.place(x=35,y=440)
-
-        linha_image = ctk.CTkImage(light_image=Image.open('C:/cadastro_teste/images/linha.png'), size=(376,3))
-        
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=35,y=166)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=429,y=166)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=35,y=264)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=429,y=264)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=35,y=362)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=429,y=362)
-
-        linha = ctk.CTkLabel(
-                             interior_md,
-                             text=None,
-                             fg_color='#D9D9D9',
-                             bg_color='white',
-                             width=0,
-                             height=0,
-                             image=linha_image
-                                     )
-        linha.place(x=35,y=460)
-
-                 
-
-
-        def fc_enter(event):
-                funcionario_button.configure(image=funcionario_hover_image)
- 
-        def fc_leave(event):
-                funcionario_button.configure(image=funcionario_image)
-
-        def cd_enter(event):
-                cadastro_button.configure(image=cadastro_hover)
-
-        def cd_leave(event):
-                cadastro_button.configure(image=cadastro_image)
-
-        
-        funcionario_button.bind("<Enter>", fc_enter)
-        funcionario_button.bind("<Leave>", fc_leave)
-
-        cadastro_button.bind("<Enter>", cd_enter)
-        cadastro_button.bind("<Leave>", cd_leave)
 
 #--------------------------------------
 #------------  LATERAL -----------------
@@ -1213,22 +754,6 @@ cadastro_button = ctk.CTkButton(
 cadastro_button.place(x=-8,y=255)
 
 
-meusdados_image = ctk.CTkImage(light_image=Image.open('C:/cadastro_teste/images/meusdados.png'), size=(237,50))
-md_hover = ctk.CTkImage(light_image=Image.open('C:/cadastro_teste/images/md_hover.png'), size=(237,50))
-meusdados_button = ctk.CTkButton(
-                                 master=home,
-                                 text=None,
-                                 image=meusdados_image,
-                                 bg_color='#E9E5E5',
-                                 fg_color='white',
-                                 hover_color='#E9E5E5',
-                                 border_color='#E9E5E5',
-                                 width=0,
-                                 height=0,
-                                 command=Abrir_tela_md
-                                                      )
-meusdados_button.place(x=-8,y=320)
-
 
 
 
@@ -1238,9 +763,6 @@ funcionario_button.bind("<Leave>", fc_leave)
 
 cadastro_button.bind("<Enter>", cd_enter)
 cadastro_button.bind("<Leave>", cd_leave)
-
-meusdados_button.bind("<Enter>", md_enter)
-meusdados_button.bind("<Leave>", md_leave)
 
 
 centralizar_janela(home)
